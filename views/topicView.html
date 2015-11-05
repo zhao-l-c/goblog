@@ -1,0 +1,511 @@
+
+
+<!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+
+    <title>自定义标签 | LC的笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+<header>
+    <div>
+
+        <div id="imglogo">
+            <a href="/"><img src="/img/logo.svg" alt="LC的笔记" title="LC的笔记"/></a>
+        </div>
+
+        <div id="textlogo">
+            <h1 class="site-name"><a href="/" title="LC的笔记">LC的笔记</a></h1>
+            <h2 class="blog-motto">好记性不如烂笔头</h2>
+        </div>
+        <div class="navbar"><a class="navbutton navmobile" href="#" title="Menu">
+        </a></div>
+        <nav class="animated">
+            <ul>
+
+                <li><a href="/">Home</a></li>
+
+                <li><a href="/archives">Archives</a></li>
+
+                <li>
+
+                    <form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+                        <label>Search</label>
+                        <input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="Search" />
+                        <input type="hidden" name="q" value="site:yoursite.com">
+                    </form>
+
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</header>
+<div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+        <article itemprop="articleBody">
+            <header class="article-info clearfix">
+                <h1 itemprop="name">
+
+                    <a href="/2015/04/27/Java/JavaWeb/JSP&Servlet/自定义标签/" title="自定义标签" itemprop="url">自定义标签</a>
+                </h1>
+                <p class="article-author">By
+
+                    <a href="http://yoursite.com" title="zlc">zlc</a>
+                </p>
+                <p class="article-time">
+                    <time datetime="2015-04-27T11:05:15.000Z" itemprop="datePublished">4月 27 2015</time>
+                    Updated:<time datetime="2015-04-27T11:05:15.000Z" itemprop="dateModified">4月 27 2015</time>
+
+                </p>
+            </header>
+            <div class="article-content">
+
+
+                <div id="toc" class="toc-article">
+                    <strong class="toc-title">Contents</strong>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#标签库API"><span class="toc-number">1.</span> <span class="toc-text">标签库API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SimpleTag接口的说明"><span class="toc-number">1.1.</span> <span class="toc-text">SimpleTag接口的说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SimpleTagSupport"><span class="toc-number">1.2.</span> <span class="toc-text">SimpleTagSupport</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义标签说明"><span class="toc-number">2.</span> <span class="toc-text">自定义标签说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#标签库描述文件"><span class="toc-number">2.1.</span> <span class="toc-text">标签库描述文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义标签HelloWorld"><span class="toc-number">2.2.</span> <span class="toc-text">自定义标签HelloWorld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带属性的标签"><span class="toc-number">2.3.</span> <span class="toc-text">带属性的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带内容的标签"><span class="toc-number">2.4.</span> <span class="toc-text">带内容的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#foreach标签的实现"><span class="toc-number">2.5.</span> <span class="toc-text">foreach标签的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带父标签的标签"><span class="toc-number">2.6.</span> <span class="toc-text">带父标签的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#choose标签"><span class="toc-number">2.7.</span> <span class="toc-text">choose标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另一种实现自定义标签的方法"><span class="toc-number">2.8.</span> <span class="toc-text">另一种实现自定义标签的方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EL函数"><span class="toc-number">3.</span> <span class="toc-text">EL函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义EL函数"><span class="toc-number">3.1.</span> <span class="toc-text">自定义EL函数</span></a></li></ol></li></ol>
+                </div>
+
+                <h2 id="标签库API">标签库API</h2>
+                <p>标签库 API 定义在<code>javax.servlet.jsp.tagext</code>包中，下图是该包下类的继承关系图：</p>
+                <p><strong>自定义标签一般实现 <code>SimpleTag</code>接口，或者继承<code>SimpleTagSupport</code>类， <code>SimpleTagSupport</code>类已经重写了 <code>SimpleTag</code>接口的全部方法，使用的时候十分方便 。</strong></p>
+                <h3 id="SimpleTag接口的说明">SimpleTag接口的说明</h3>
+                <p><code>SimpleTag</code>接口提供自定义标签的方便，它有以下方法：</p>
+                <ul>
+                    <li><p>setJspContext 方法：该方法把代表 JSP 页面的<code>JspContext</code>对象传递给标签处理器对象，其中<code>JspContext</code>是<code>PageContext</code>的父类。<code>setJspContext</code>方法在<code>doTag</code>方法前执行；</p>
+                    </li>
+                    <li><p>setParent 方法：该方法把父标签处理器对象传递给当前标签处理器对象；</p>
+                    </li>
+                    <li><p>getParent 方法：该方法用于获得标签的父标签处理器对象；</p>
+                    </li>
+                    <li><p>setJspBody 方法：该方法用于把代表标签体的<code>JspFragment</code>对象传递给标签处理器对象；</p>
+                    </li>
+                    <li><p>doTag 方法：该方法用于完成所有的标签逻辑。该方法可以抛出<code>javax.servlet.jsp.SkipPageException</code>异常，用于通知 Web 容器不再执行 JSP 页面中位于结束标记后面的内容。</p>
+                    </li>
+                </ul>
+                <p><strong>这其中的setXxx方法是JSP引擎执行的，目的是把相应的对象设置到标签处理器中。</strong>实现<code>SimpleTag</code>接口的标签的声明周期为：</p>
+                <p>可以看到，通过这些setXxx方法，标签处理器类除了获取JSP页面对象外，还可以获取标签的父标签、标签属性、标签体内容，下面内容会分别对后3项说明。</p>
+                <h3 id="SimpleTagSupport">SimpleTagSupport</h3>
+                <p>为简化简单标签处理器的编写工作，JSP API 中提供了<code>SimpleTag</code>接口的一个实现类<code>SimpleTagSupport</code>。 <code>SimpleTagSupport</code>实现了<code>SimpleTag</code>接口中的方法，它 内部以成员变量的形式保存了<code>setJspContext</code>方法和<code>setJspBody</code>方法传递进来的参数。此外，它还定义了如 下两个方法、来返回这两个参数：</p>
+                <ul>
+                    <li><code>getJspContext方法</code>：该方法用于返回代表调用页面的<code>JspContext</code>对象；</li>
+                    <li><code>getJspBody方法</code>：该方法用于得到代表标签体的<code>JspFragment</code>对象。</li>
+                </ul>
+                <h2 id="自定义标签说明">自定义标签说明</h2>
+                <h3 id="标签库描述文件">标签库描述文件</h3>
+                <p>标签库描述(Tag Library Description)文件简称为 TLD文件，其扩展名为 .tld。 多个标签的集合就形成了一个标签库，标签库中的所有标签都必须在标签文件中进行描述 TLD文件可以放置在 web 应用程序的 WEB-INF 目录及其子目录中，但不能放置在 WEB-INF 目录下的 classes 和 lib 子目录中 。TLD文件也可以放置在 WEB-INF\lib 目录下的 jar 包的 META-INF 目录及其子目录中。</p>
+                <blockquote>
+                    <p>TLD文件放置的位置说明<br><a href="http://blog.csdn.net/qingkangxu/article/details/6057034" target="_blank" rel="external">自定义标签库中的tld文件</a></p>
+                </blockquote>
+                <h3 id="自定义标签HelloWorld">自定义标签HelloWorld</h3>
+                <p>基本步骤：<br>（1）提供标签处理类型，实现<code>SimpleTag</code>接口，或者继承<code>SimpleTagSupport</code>类。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span> </span>{</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        System.out.println(<span class="string">"hello,world"</span>);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>（2）定义标签的TLD文件。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></div><div class="line"><span class="tag">&lt;<span class="title">taglib</span> <span class="attribute">xmlns</span>=<span class="value">"http://java.sun.com/xml/ns/j2ee"</span></span></div><div class="line">    <span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span></div><div class="line">    <span class="attribute">xsi:schemaLocation</span>=<span class="value">"http://java.sun.com/xml/ns/j2ee </span></div><div class="line">                         http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"</div><div class="line">    <span class="attribute">version</span>=<span class="value">"2.0"</span>&gt;</div><div class="line"> </div><div class="line">  <span class="tag">&lt;<span class="title">description</span>&gt;</span>my tag core library<span class="tag">&lt;/<span class="title">description</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">display-name</span>&gt;</span>my tag core<span class="tag">&lt;/<span class="title">display-name</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">tlib-version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="title">tlib-version</span>&gt;</span></div><div class="line"> </div><div class="line">  <span class="comment">&lt;!-- 导入JSP中使用时候的建议前缀名 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">short-name</span>&gt;</span>mytag<span class="tag">&lt;/<span class="title">short-name</span>&gt;</span></div><div class="line">  <span class="comment">&lt;!-- TLD文件的唯一id--&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">uri</span>&gt;</span>http://lc.my/jsp/jstl/mytag<span class="tag">&lt;/<span class="title">uri</span>&gt;</span></div><div class="line"> </div><div class="line">  <span class="comment">&lt;!-- hello标签 --&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="title">tag</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="title">name</span>&gt;</span>hello<span class="tag">&lt;/<span class="title">name</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>jstl.Mytag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>empty<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">taglib</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>（3）在JSP页面中导入自定义标签。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;%@ taglib <span class="variable">uri=</span><span class="string">"http://lc.my/jsp/jstl/mytag"</span>  <span class="variable">prefix=</span><span class="string">"mytag"</span>%&gt;</div></pre></td></tr></table></figure>
+
+                <h3 id="带属性的标签">带属性的标签</h3>
+                <p>需求：实现带value和count属性的标签，并把value属性值输出count遍到JSP中。</p>
+                <p>首先TLD的内容为：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                    </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>print<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                     </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.PrintTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>    </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>empty<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>     </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                            </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>value<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                 </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>true<span class="tag">&lt;/<span class="title">required</span>&gt;</span>          </div><div class="line">        <span class="tag">&lt;<span class="title">rtexprvalue</span>&gt;</span>true<span class="tag">&lt;/<span class="title">rtexprvalue</span>&gt;</span>    </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                           </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                            </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>count<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                 </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>false<span class="tag">&lt;/<span class="title">required</span>&gt;</span>         </div><div class="line">        <span class="tag">&lt;<span class="title">rtexprvalue</span>&gt;</span>false<span class="tag">&lt;/<span class="title">rtexprvalue</span>&gt;</span>   </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                           </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>这里用到了attribute节点定义标签的属性，其中：</p>
+                <ul>
+                    <li>required：属性是否必须；</li>
+                    <li>rtexprvalue：属性是否能解析运行时表达式的值，<strong>也就是可以解析EL表达式</strong>。</li>
+                </ul>
+                <p>还可以包含下列属性：</p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>作用</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>name</td>
+                        <td>定义属性的名称。每个标签的是属性名称必须是唯一的。</td>
+                    </tr>
+                    <tr>
+                        <td>required</td>
+                        <td>指定属性是否是必须的或者可选的，如果设置为false为可选。</td>
+                    </tr>
+                    <tr>
+                        <td>rtexprvalue</td>
+                        <td>声明在运行表达式时，标签属性是否有效。</td>
+                    </tr>
+                    <tr>
+                        <td>type</td>
+                        <td>定义该属性的Java类类型 。默认指定为 String</td>
+                    </tr>
+                    <tr>
+                        <td>description</td>
+                        <td>描述信息</td>
+                    </tr>
+                    <tr>
+                        <td>fragment</td>
+                        <td>如果声明了该属性,属性值将被视为一个 JspFragment。</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p>然后标签类中标签属性对应的类属性，并且<strong>提供setter方法</strong>。最后在<code>doTag</code>方法中完成处理逻辑。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="comment">// 定义标签对应的属性和setter方法</span></div><div class="line">    <span class="keyword">private</span> String value;</div><div class="line">    <span class="keyword">private</span> String count;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(String value) {</div><div class="line">        <span class="keyword">this</span>.value = value;</div><div class="line">    }</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCount</span>(String count) {</div><div class="line">        <span class="keyword">this</span>.count = count;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        PageContext pc = (PageContext) getJspContext();</div><div class="line">        JspWriter out = pc.getOut();</div><div class="line">        <span class="keyword">int</span> c = Integer.parseInt(count);</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; c; i ++) {</div><div class="line">            out.print(value);</div><div class="line">            out.print(<span class="string">"&lt;br/&gt;"</span>);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>为声明提供标签属性对应的setter方法？<strong>这是因为在JSP引擎解析JSP的时候，会调用setter设置标签的属性值到处理器类中。</strong></p>
+                <h3 id="带内容的标签">带内容的标签</h3>
+                <p>需求：实现一个带内容的标签，能够把标签体内容转换为大写字母输出。</p>
+                <p>首先定义TLD文件：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                        </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>upper<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                         </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.UpperTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>        </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>    </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p><strong>注意body-content节点的不同取值</strong>：</p>
+                <ul>
+                    <li>empty：没有标签体内容；</li>
+                    <li>scriptless：标签体内容可以包含EL表达式，但不能包含JSP脚本、JSP表达式；</li>
+                    <li>tagdependent：标签体的内容直接经过自定义标签的处理，也就是 无法处理 标签体内容中的EL表达式（声明为 scriptless的时候会先进过WEB容器的标签处理器处理EL表达式 ）。</li>
+                </ul>
+                <p>然后定义对应的标签类并实现<code>doTag</code>方法：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UpperTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        JspFragment body = getJspBody();</div><div class="line"> </div><div class="line">        StringWriter sw = <span class="keyword">new</span> StringWriter();</div><div class="line">        <span class="comment">/*</span></div><div class="line">         * JspFragment.invoke方法：若参数为null表示标签体内容输出到当前页面，否则输出到对应的Writer对象中。</div><div class="line">         */</div><div class="line">        body.invoke(sw);</div><div class="line"> </div><div class="line">        String upper = sw.toString().toUpperCase();</div><div class="line">        ((PageContext)getJspContext()).getOut().print(upper);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p><strong>调用<code>getJspBody()</code>方法可以获取标签体内容对象<code>JspFragment</code>，该对象有一个<code>invoke</code>方法</strong>：</p>
+                <ul>
+                    <li>该方法用于执行<code>JspFragment</code>对象所代表的 JSP 代码片段。在<code>doTag</code>方法中可以根据需要调用该方法。</li>
+                    <li>该方法的参数用于指定将<code>JspFragment</code>对象的执行结果写入到哪个输出流对象中。若传递参数的值为 null，则将执行结果写入到<code>JspContext.geOut()</code>方法返回的输出流对象中。<strong>也就是不修改标签体的内容。</strong></li>
+                    <li>若想在标签处理器中修改标签体内容：需在调用<code>invoke</code>方法时指定一个可取出结果数据的输出流对象（如：<code>StringWriter</code>），让标签体的执行结果输出到该输出流中，然后从该输出流对象中取出数据进行修改后在输出到目标设备。</li>
+                </ul>
+                <h3 id="foreach标签的实现">foreach标签的实现</h3>
+                <p>需求：实现类似JSTL中c:forEach标签的功能，能够对List、Map集合和数组进行遍历。</p>
+                <p>TLD文件内容：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                         </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>foreach<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                      </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.ForeachTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>     </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>   </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                               </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>items<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                    </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>true<span class="tag">&lt;/<span class="title">required</span>&gt;</span>             </div><div class="line">        <span class="tag">&lt;<span class="title">rtexprvalue</span>&gt;</span>true<span class="tag">&lt;/<span class="title">rtexprvalue</span>&gt;</span>       </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                              </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                               </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>var<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                      </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>false<span class="tag">&lt;/<span class="title">required</span>&gt;</span>            </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                              </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>标签处理器的代码：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ForeachTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="keyword">private</span> Iterator&lt;Object&gt; items;</div><div class="line">    <span class="keyword">private</span> String var;</div><div class="line"> </div><div class="line">    <span class="annotation">@SuppressWarnings</span>({ <span class="string">"unchecked"</span>, <span class="string">"rawtypes"</span> })</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setItems</span>(Object obj) {</div><div class="line">        <span class="keyword">if</span>(obj <span class="keyword">instanceof</span> Collection) {</div><div class="line">            <span class="keyword">this</span>.items = ((Collection&lt;Object&gt;)obj).iterator();</div><div class="line">        } <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Map){</div><div class="line">            <span class="keyword">this</span>.items = ((Map)obj).entrySet().iterator();</div><div class="line">        } <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> List) {</div><div class="line">            <span class="keyword">this</span>.items = ((List&lt;Object&gt;)obj).iterator();</div><div class="line">        } <span class="keyword">else</span> <span class="keyword">if</span> (obj.getClass().isArray()) {</div><div class="line">            Object[] array = (Object[]) obj;</div><div class="line">            items = Arrays.asList(array).iterator();</div><div class="line">        }</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setVar</span>(String var) {</div><div class="line">        <span class="keyword">this</span>.var = var;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        PageContext pc = (PageContext) getJspContext();</div><div class="line">        JspFragment body = getJspBody();</div><div class="line">        <span class="keyword">while</span>(items.hasNext()) {</div><div class="line">            pc.setAttribute(var, items.next());</div><div class="line">            body.invoke(<span class="keyword">null</span>);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>这个标签可以遍历List、Map集合，还有任意类型的数组。<strong>由于并不对标签体进行处理，所以<code>invoke</code>方法的参数为null。</strong></p>
+                <blockquote>
+                    <p>可以参考JSTL标签库中的forEach实现中关键的源码：</p>
+                </blockquote>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// ForEachSupport supportedTypeForEachIterator</span></div><div class="line"><span class="keyword">protected</span> ForEachIterator <span class="title">supportedTypeForEachIterator</span>(Object o)</div><div class="line">            <span class="keyword">throws</span> JspTagException {</div><div class="line">    ForEachIterator items;                          </div><div class="line">    <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Object[])                      </div><div class="line">        items = toForEachIterator((Object[]) o);    </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">boolean</span>[])                </div><div class="line">        items = toForEachIterator((<span class="keyword">boolean</span>[]) o);   </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">byte</span>[])                   </div><div class="line">        items = toForEachIterator((<span class="keyword">byte</span>[]) o);      </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">char</span>[])                   </div><div class="line">        items = toForEachIterator((<span class="keyword">char</span>[]) o);      </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">short</span>[])                  </div><div class="line">        items = toForEachIterator((<span class="keyword">short</span>[]) o);     </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">int</span>[])                    </div><div class="line">        items = toForEachIterator((<span class="keyword">int</span>[]) o);       </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">long</span>[])                   </div><div class="line">        items = toForEachIterator((<span class="keyword">long</span>[]) o);      </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">float</span>[])                  </div><div class="line">        items = toForEachIterator((<span class="keyword">float</span>[]) o);     </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> <span class="keyword">double</span>[])                 </div><div class="line">        items = toForEachIterator((<span class="keyword">double</span>[]) o);    </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Collection)               </div><div class="line">        items = toForEachIterator((Collection) o);  </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Iterator)                 </div><div class="line">        items = toForEachIterator((Iterator) o);    </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Enumeration)              </div><div class="line">        items = toForEachIterator((Enumeration) o); </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> Map)                      </div><div class="line">        items = toForEachIterator((Map) o);         </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> ResultSet)                </div><div class="line">        items = toForEachIterator((ResultSet) o);   </div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (o <span class="keyword">instanceof</span> String)                   </div><div class="line">        items = toForEachIterator((String) o);      </div><div class="line">    <span class="keyword">else</span>                                            </div><div class="line">        items = toForEachIterator(o);               </div><div class="line">    <span class="keyword">return</span> (items);                                 </div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>测试代码：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="xml"><span class="vbscript">&lt;%                                                                                                               </span></span></div><div class="line">    List&lt;Customer&gt; list = <span class="keyword">new</span> ArrayList&lt;Customer&gt;();                                                             </div><div class="line">    list.add(<span class="keyword">new</span> Customer(<span class="number">1</span>, <span class="string">"jack"</span>));                                                                           </div><div class="line">    list.add(<span class="keyword">new</span> Customer(<span class="number">2</span>, <span class="string">"rose"</span>));                                                                           </div><div class="line">    list.add(<span class="keyword">new</span> Customer(<span class="number">3</span>, <span class="string">"ben"</span>));                                                                            </div><div class="line">    list.add(<span class="keyword">new</span> Customer(<span class="number">4</span>, <span class="string">"tom"</span>));                                                                            </div><div class="line">    <span class="built_in">request</span>.setAttribute(<span class="string">"customers"</span>, list);                                                                     </div><div class="line"> </div><div class="line">    Map&lt;<span class="built_in">String</span>, Customer&gt; map = <span class="keyword">new</span> HashMap&lt;<span class="built_in">String</span>, Customer&gt;();                                                 </div><div class="line">    map.put(<span class="string">"first"</span>, <span class="keyword">new</span> Customer(<span class="number">1</span>, <span class="string">"jack"</span>));                                                                   </div><div class="line">    map.put(<span class="string">"second"</span>, <span class="keyword">new</span> Customer(<span class="number">2</span>, <span class="string">"rose"</span>));                                                                  </div><div class="line">    map.put(<span class="string">"third"</span>, <span class="keyword">new</span> Customer(<span class="number">3</span>, <span class="string">"ben"</span>));                                                                    </div><div class="line">    map.put(<span class="string">"fourth"</span>, <span class="keyword">new</span> Customer(<span class="number">4</span>, <span class="string">"tim"</span>));                                                                   </div><div class="line">    <span class="built_in">request</span>.setAttribute(<span class="string">"customerMap"</span>, map);                                                                    </div><div class="line"> </div><div class="line">    <span class="built_in">String</span>[] <span class="built_in">array</span> = <span class="keyword">new</span> <span class="built_in">String</span>[] {<span class="string">"black"</span>, <span class="string">"white"</span>, <span class="string">"yellow"</span>, <span class="string">"blue"</span>};                                          </div><div class="line">    <span class="built_in">request</span>.setAttribute(<span class="string">"colors"</span>, <span class="built_in">array</span>);                                                                       </div><div class="line"> </div><div class="line">    Customer[] array2 = <span class="keyword">new</span> Customer[]{<span class="keyword">new</span> Customer(<span class="number">1</span>, <span class="string">"ahah"</span>), <span class="keyword">new</span> Customer(<span class="number">2</span>, <span class="string">"hehe"</span>), <span class="keyword">new</span> Customer(<span class="number">3</span>, <span class="string">"wawa"</span>)};</div><div class="line">    <span class="built_in">request</span>.setAttribute(<span class="string">"customerArray"</span>, array2);                                                               </div><div class="line">%&gt;          </div><div class="line">                                                                                                      </div><div class="line"><span class="tag">&lt;<span class="title">h4</span>&gt;</span>foreach功能的标签：<span class="tag">&lt;/<span class="title">h4</span>&gt;</span>                                                         </div><div class="line">遍历List集合<span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                                  </div><div class="line"><span class="tag">&lt;<span class="title">mytag:foreach</span> <span class="attribute">items</span>=<span class="value">"${requestScope.customers }"</span> <span class="attribute">var</span>=<span class="value">"c"</span>&gt;</span>                     </div><div class="line">    ${pageScope.c.id}--${pageScope.c.name }<span class="tag">&lt;<span class="title">br</span>/&gt;</span>                               </div><div class="line"><span class="tag">&lt;/<span class="title">mytag:foreach</span>&gt;</span>                                                               </div><div class="line"><span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                                          </div><div class="line"> </div><div class="line">遍历Map集合<span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                                   </div><div class="line"><span class="tag">&lt;<span class="title">mytag:foreach</span> <span class="attribute">items</span>=<span class="value">"${requestScope.customerMap }"</span> <span class="attribute">var</span>=<span class="value">"c"</span>&gt;</span>                   </div><div class="line">    ${pageScope.c.key }--${pageScope.c.value.id }--${pageScope.c.value.name }<span class="tag">&lt;<span class="title">br</span></span></div><div class="line">&lt;/<span class="attribute">mytag:foreach</span>&gt;                                                               </div><div class="line"><span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                                          </div><div class="line"> </div><div class="line">遍历数组<span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                                      </div><div class="line"><span class="tag">&lt;<span class="title">mytag:foreach</span> <span class="attribute">items</span>=<span class="value">"${requestScope.colors }"</span> <span class="attribute">var</span>=<span class="value">"c"</span>&gt;</span>                        </div><div class="line">    ${pageScope.c}<span class="tag">&lt;<span class="title">br</span>/&gt;</span>                                                        </div><div class="line"><span class="tag">&lt;/<span class="title">mytag:foreach</span>&gt;</span>                                                               </div><div class="line"><span class="tag">&lt;<span class="title">br</span>/&gt;</span></div></pre></td></tr></table></figure>
+
+                <h3 id="带父标签的标签">带父标签的标签</h3>
+                <p>总结几点：</p>
+                <ul>
+                    <li>父标签不能获取子标签的引用；</li>
+                </ul>
+                <ul>
+                    <li>子标签可以通过<code>getParent</code>方法获取父标签的引用（前提是间接或直接实现了<code>SimpleTag</code>接口），且父标签的类型为<code>JspTag</code>；</li>
+                </ul>
+                <ul>
+                    <li>子标签其实是父标签的内容，所以父标签的body-content一定不能为empty；</li>
+                </ul>
+                <ul>
+                    <li>在TLD文件中，子标签和父标签都需要配置，且分开配置。</li>
+                </ul>
+                <p>简单示例：<br>TLD内容：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!-- 父标签 --&gt;</span>                                    </div><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                           </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>parent<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                         </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.ParentTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>        </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>     </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                                 </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>name<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                       </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>true<span class="tag">&lt;/<span class="title">required</span>&gt;</span>               </div><div class="line">        <span class="tag">&lt;<span class="title">rtexprvalue</span>&gt;</span>true<span class="tag">&lt;/<span class="title">rtexprvalue</span>&gt;</span>         </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                                </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span>                                          </div><div class="line"><span class="comment">&lt;!-- 子标签 --&gt;</span>                                    </div><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                           </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>child<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                          </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.ChildTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>         </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>empty<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>          </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>`</p>
+                <p>父标签处理器类：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ParentTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="keyword">private</span> String name;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span>(String name) {</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> String <span class="title">getName</span>() {</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        getJspBody().invoke(<span class="keyword">null</span>);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>子标签处理器类：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        JspTag parent = getParent();</div><div class="line">        String name = ((ParentTag)parent).getName();</div><div class="line">        getJspContext().getOut().print(name);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>测试：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">h4</span>&gt;</span>带父标签的标签：<span class="tag">&lt;/<span class="title">h4</span>&gt;</span>               </div><div class="line"><span class="tag">&lt;<span class="title">mytag:parent</span> <span class="attribute">name</span>=<span class="value">"oracle"</span>&gt;</span>    </div><div class="line">    <span class="tag">&lt;<span class="title">mytag:child</span>/&gt;</span>              </div><div class="line"><span class="tag">&lt;/<span class="title">mytag:parent</span>&gt;</span>                 </div><div class="line"><span class="tag">&lt;<span class="title">br</span>/&gt;</span></div></pre></td></tr></table></figure>
+
+                <h3 id="choose标签">choose标签</h3>
+                <p>需求：模拟JSTL中c:chooose标签的功能，这里其实有3个标签，分别是choose、when和otherwise：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">c:choose</span>&gt;</span>                                                     </div><div class="line">    <span class="tag">&lt;<span class="title">c:when</span> <span class="attribute">test</span>=<span class="value">"${param.age &gt; 30 }"</span>&gt;</span>中年人<span class="tag">&lt;/<span class="title">c:when</span>&gt;</span>         </div><div class="line">    <span class="tag">&lt;<span class="title">c:when</span> <span class="attribute">test</span>=<span class="value">"${param.age &gt; 18 }"</span>&gt;</span>年轻人<span class="tag">&lt;/<span class="title">c:when</span>&gt;</span>         </div><div class="line">    <span class="tag">&lt;<span class="title">c:otherwise</span>&gt;</span>小孩<span class="tag">&lt;/<span class="title">c:otherwise</span>&gt;</span>                          </div><div class="line"><span class="tag">&lt;/<span class="title">c:choose</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>注意，只要一个when标签执行过了后面就不需要执行输出，也就是需要一个<strong>全局</strong>的boolean变量判断前面是否已经执行过，否则由后面的when标签或者最后的otherwise执行。</p>
+                <p>TLD文件：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                                 </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>choose<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                               </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.ChooseTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>              </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>           </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span>                                                </div><div class="line"> </div><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                                 </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>when<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                                 </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.WhenTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>                </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>           </div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">attribute</span>&gt;</span>                                       </div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>test<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                             </div><div class="line">        <span class="tag">&lt;<span class="title">required</span>&gt;</span>true<span class="tag">&lt;/<span class="title">required</span>&gt;</span>                     </div><div class="line">        <span class="tag">&lt;<span class="title">rtexprvalue</span>&gt;</span>true<span class="tag">&lt;/<span class="title">rtexprvalue</span>&gt;</span>               </div><div class="line">    <span class="tag">&lt;/<span class="title">attribute</span>&gt;</span>                                      </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span>                                                </div><div class="line"> </div><div class="line"><span class="tag">&lt;<span class="title">tag</span>&gt;</span>                                                 </div><div class="line">    <span class="tag">&lt;<span class="title">name</span>&gt;</span>otherwise<span class="tag">&lt;/<span class="title">name</span>&gt;</span>                            </div><div class="line">    <span class="tag">&lt;<span class="title">tag-class</span>&gt;</span>tag.OtherwiseTag<span class="tag">&lt;/<span class="title">tag-class</span>&gt;</span>           </div><div class="line">    <span class="tag">&lt;<span class="title">body-content</span>&gt;</span>scriptless<span class="tag">&lt;/<span class="title">body-content</span>&gt;</span>           </div><div class="line"><span class="tag">&lt;/<span class="title">tag</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>标签处理器类：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ChooseTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="keyword">private</span> Boolean flag = Boolean.TRUE;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> Boolean <span class="title">getFlag</span>() {</div><div class="line">        <span class="keyword">return</span> flag;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFlag</span>(Boolean flag) {</div><div class="line">        <span class="keyword">this</span>.flag = flag;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        getJspBody().invoke(<span class="keyword">null</span>);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WhenTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span></span>{</div><div class="line">    <span class="keyword">private</span> Boolean test;</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTest</span>(Boolean test) {</div><div class="line">        <span class="keyword">this</span>.test = test;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        ChooseTag parent = (ChooseTag) getParent();</div><div class="line">        <span class="keyword">if</span>(test && parent.getFlag()) {</div><div class="line">            getJspBody().invoke(<span class="keyword">null</span>);</div><div class="line">            parent.setFlag(<span class="keyword">false</span>);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OtherwiseTag</span> <span class="keyword">extends</span> <span class="title">SimpleTagSupport</span> </span>{</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doTag</span>() <span class="keyword">throws</span> JspException, IOException {</div><div class="line">        ChooseTag parent = (ChooseTag) getParent();</div><div class="line">        <span class="keyword">if</span>(parent.getFlag()) {</div><div class="line">            getJspBody().invoke(<span class="keyword">null</span>);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <h3 id="另一种实现自定义标签的方法">另一种实现自定义标签的方法</h3>
+                <p>上述的方法是针对JSP 2.0提供的自定义标签方法。在之前的JSP版中，还可以使用继承<code>TagSupport</code>等父类的方式实现标签。<br>例如下面是重新实现foreach标签时的处理器类：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ForeachTag2</span> <span class="keyword">extends</span> <span class="title">TagSupport</span></span>{</div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1</span>L;</div><div class="line"> </div><div class="line">    <span class="keyword">private</span> Iterator&lt;Object&gt; items;</div><div class="line">    <span class="keyword">private</span> String var;</div><div class="line"> </div><div class="line">    <span class="annotation">@SuppressWarnings</span>({ <span class="string">"unchecked"</span>, <span class="string">"rawtypes"</span> })</div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setItems</span>(Object items) {</div><div class="line">        <span class="keyword">if</span>(items <span class="keyword">instanceof</span> Collection) {</div><div class="line">            <span class="keyword">this</span>.items = ((Collection)items).iterator();</div><div class="line">        } <span class="keyword">else</span> <span class="keyword">if</span> (items <span class="keyword">instanceof</span> Map){</div><div class="line">            <span class="keyword">this</span>.items = ((Map)items).entrySet().iterator();</div><div class="line">        } <span class="keyword">else</span> <span class="keyword">if</span> (items <span class="keyword">instanceof</span> List) {</div><div class="line">            <span class="keyword">this</span>.items = ((List)items).iterator();</div><div class="line">        } <span class="keyword">else</span> {</div><div class="line">            <span class="keyword">this</span>.items = <span class="keyword">null</span>;</div><div class="line">        }</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setVar</span>(String var) {</div><div class="line">        <span class="keyword">this</span>.var = var;</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">doStartTag</span>() <span class="keyword">throws</span> JspException {</div><div class="line">        <span class="keyword">if</span>(items.hasNext()) {</div><div class="line">            pageContext.setAttribute(var, items.next());</div><div class="line">            <span class="keyword">return</span> EVAL_BODY_INCLUDE;</div><div class="line">        } <span class="keyword">else</span> {</div><div class="line">            <span class="keyword">return</span> SKIP_BODY;</div><div class="line">        }</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">doAfterBody</span>() <span class="keyword">throws</span> JspException {</div><div class="line">        <span class="keyword">if</span>(items.hasNext()) {</div><div class="line">            pageContext.setAttribute(var, items.next());</div><div class="line">            <span class="keyword">return</span> EVAL_BODY_AGAIN;</div><div class="line">        } <span class="keyword">else</span> {</div><div class="line">            <span class="keyword">return</span> SKIP_BODY;</div><div class="line">        }</div><div class="line">    }</div><div class="line"> </div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">doEndTag</span>() <span class="keyword">throws</span> JspException {</div><div class="line">        pageContext.removeAttribute(var);</div><div class="line">        <span class="keyword">return</span> EVAL_PAGE;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>除此外，其它的过程都是类似的。</p>
+                <h2 id="EL函数">EL函数</h2>
+                <p>为了简化在 JSP 页面操作字符串，JSTL 中提供了一套 EL 函数，这些自定义函数包含了 JSP 页面制经常要用到的字符串操作。 在使用这些函数之前必须在JSP中引入标准函数的声明：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;%@ taglib <span class="variable">prefix=</span><span class="string">"fn"</span>  <span class="variable">uri=</span><span class="string">"http://java.sun.com/jsp/jstl/functions"</span> %&gt;</div></pre></td></tr></table></figure>
+
+                <p>然后在JSP的EL表达式中使用：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$<span class="rules">{<span class="rule"><span class="attribute">ns</span>:<span class="value"><span class="function">methodName</span>(args....)</span></span></span>}</div></pre></td></tr></table></figure>
+
+                <p>例如计算字符串参数的长度：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$<span class="rules">{<span class="rule"><span class="attribute">fn</span>:<span class="value"><span class="function">length</span>(param.name) </span></span></span>}</div></pre></td></tr></table></figure>
+
+                <p><strong>同时，EL函数也可以自定义。</strong></p>
+                <h3 id="自定义EL函数">自定义EL函数</h3>
+                <p>EL函数最终是有某个Java类的<strong>公开静态</strong>方法完成功能的。下面是自定义EL函数的步骤：<br>（1）编写 EL 自定义函数映射的Java 类中的静态方法，且 这个 Java 类必须带有 public 修饰符，方法必须是这个类的带有 public 修饰符的静态方法。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> ElFunction {</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">concate</span>(String src1, String src2) {</div><div class="line">        <span class="keyword">return</span> src1 + src2;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+                <p>（2）编写标签库描述文件的TLD文件，在TLD文件中描述自定义函数。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="pi">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></div><div class="line"> </div><div class="line"><span class="tag">&lt;<span class="title">taglib</span> <span class="attribute">xmlns</span>=<span class="value">"http://java.sun.com/xml/ns/j2ee"</span> <span class="attribute">xmlns:xsi</span>=<span class="value">"http://www.w3.org/2001/XMLSchema-instance"</span></span></div><div class="line">    <span class="attribute">xsi:schemaLocation</span>=<span class="value">"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"</span></div><div class="line">    <span class="attribute">version</span>=<span class="value">"2.0"</span>&gt;</div><div class="line"> </div><div class="line">    <span class="tag">&lt;<span class="title">description</span>&gt;</span>My 1.0 functions library<span class="tag">&lt;/<span class="title">description</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">display-name</span>&gt;</span>My functions<span class="tag">&lt;/<span class="title">display-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">tlib-version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="title">tlib-version</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">short-name</span>&gt;</span>fn<span class="tag">&lt;/<span class="title">short-name</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">uri</span>&gt;</span>http://lc.my/jsp/jstl/functions<span class="tag">&lt;/<span class="title">uri</span>&gt;</span></div><div class="line"> </div><div class="line">    <span class="comment">&lt;!-- 自定义EL函数 --&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="title">function</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">name</span>&gt;</span>concate<span class="tag">&lt;/<span class="title">name</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">function-class</span>&gt;</span>tag.ElFunction<span class="tag">&lt;/<span class="title">function-class</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="title">function-signature</span>&gt;</span>java.lang.String concate(java.lang.String,</div><div class="line">            java.lang.String)<span class="tag">&lt;/<span class="title">function-signature</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="title">function</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="title">taglib</span>&gt;</span></div></pre></td></tr></table></figure>
+
+                <p>（3）在 JSP 页面中导入和使用自定义函数。<br>示例：</p>
+                <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;%@ taglib <span class="variable">uri=</span><span class="string">"http://lc.my/jsp/jstl/functions"</span> <span class="variable">prefix=</span><span class="string">"myfn"</span> %&gt;</div></pre></td></tr></table></figure>
+
+
+            </div>
+            <footer class="article-footer clearfix">
+
+                <div class="article-tags">
+
+                    <span></span> <a href="/tags/JSP-Servlet/">JSP&Servlet</a>
+                </div>
+
+
+
+
+                <div class="article-share" id="share">
+
+                    <div data-url="http://yoursite.com/2015/04/27/Java/JavaWeb/JSP&Servlet/自定义标签/" data-title="自定义标签 | LC的笔记" data-tsina="null" class="share clearfix">
+                    </div>
+
+                </div>
+            </footer>
+        </article>
+
+        <nav class="article-nav clearfix">
+
+            <div class="prev" >
+                <a href="/2015/04/27/Java/Struts2/Struts2完全教程（3）- ModelDriven和Preparable接口的使用/" title="Struts2完全教程（3）- ModelDriven和Preparable接口的使用">
+                    <strong>PREVIOUS:</strong><br/>
+  <span>
+  Struts2完全教程（3）- ModelDriven和Preparable接口的使用</span>
+                </a>
+            </div>
+
+
+            <div class="next">
+                <a href="/2015/04/27/Java/JavaWeb/JSP&Servlet/Tomcat使用简介/"  title="Tomcat使用简介">
+                    <strong>NEXT:</strong><br/>
+ <span>Tomcat使用简介
+</span>
+                </a>
+            </div>
+
+        </nav>
+
+
+    </div>
+    <div class="openaside"><a class="navbutton" href="#" title="Show Sidebar"></a></div>
+
+    <div id="toc" class="toc-aside">
+        <strong class="toc-title">Contents</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#标签库API"><span class="toc-number">1.</span> <span class="toc-text">标签库API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SimpleTag接口的说明"><span class="toc-number">1.1.</span> <span class="toc-text">SimpleTag接口的说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SimpleTagSupport"><span class="toc-number">1.2.</span> <span class="toc-text">SimpleTagSupport</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义标签说明"><span class="toc-number">2.</span> <span class="toc-text">自定义标签说明</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#标签库描述文件"><span class="toc-number">2.1.</span> <span class="toc-text">标签库描述文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义标签HelloWorld"><span class="toc-number">2.2.</span> <span class="toc-text">自定义标签HelloWorld</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带属性的标签"><span class="toc-number">2.3.</span> <span class="toc-text">带属性的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带内容的标签"><span class="toc-number">2.4.</span> <span class="toc-text">带内容的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#foreach标签的实现"><span class="toc-number">2.5.</span> <span class="toc-text">foreach标签的实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#带父标签的标签"><span class="toc-number">2.6.</span> <span class="toc-text">带父标签的标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#choose标签"><span class="toc-number">2.7.</span> <span class="toc-text">choose标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#另一种实现自定义标签的方法"><span class="toc-number">2.8.</span> <span class="toc-text">另一种实现自定义标签的方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EL函数"><span class="toc-number">3.</span> <span class="toc-text">EL函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义EL函数"><span class="toc-number">3.1.</span> <span class="toc-text">自定义EL函数</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="asidepart">
+        <div class="closeaside"><a class="closebutton" href="#" title="Hide Sidebar"></a></div>
+        <aside class="clearfix">
+
+
+
+
+            <div class="tagslist">
+                <p class="asidetitle">Tags</p>
+                <ul class="clearfix">
+
+                    <li><a href="/tags/Android/" title="Android">Android<sup>3</sup></a></li>
+
+                    <li><a href="/tags/Concurrent/" title="Concurrent">Concurrent<sup>7</sup></a></li>
+
+                    <li><a href="/tags/ConcurrentAPI/" title="ConcurrentAPI">ConcurrentAPI<sup>1</sup></a></li>
+
+                    <li><a href="/tags/Cookie-Session/" title="Cookie&amp;Session">Cookie&amp;Session<sup>2</sup></a></li>
+
+                    <li><a href="/tags/Hibernate/" title="Hibernate">Hibernate<sup>5</sup></a></li>
+
+                    <li><a href="/tags/JDBC/" title="JDBC">JDBC<sup>3</sup></a></li>
+
+                    <li><a href="/tags/JSP-Servlet/" title="JSP&amp;Servlet">JSP&amp;Servlet<sup>5</sup></a></li>
+
+                    <li><a href="/tags/Java/" title="Java">Java<sup>3</sup></a></li>
+
+                    <li><a href="/tags/Maven/" title="Maven">Maven<sup>4</sup></a></li>
+
+                    <li><a href="/tags/MyBatis/" title="MyBatis">MyBatis<sup>2</sup></a></li>
+
+                    <li><a href="/tags/NIO/" title="NIO">NIO<sup>6</sup></a></li>
+
+                    <li><a href="/tags/Network/" title="Network">Network<sup>2</sup></a></li>
+
+                    <li><a href="/tags/Oracle/" title="Oracle">Oracle<sup>6</sup></a></li>
+
+                    <li><a href="/tags/SQL/" title="SQL">SQL<sup>6</sup></a></li>
+
+                    <li><a href="/tags/Spring/" title="Spring">Spring<sup>5</sup></a></li>
+
+                    <li><a href="/tags/SpringMVC/" title="SpringMVC">SpringMVC<sup>4</sup></a></li>
+
+                    <li><a href="/tags/Struts2/" title="Struts2">Struts2<sup>5</sup></a></li>
+
+                    <li><a href="/tags/设计模式/" title="设计模式">设计模式<sup>12</sup></a></li>
+
+                </ul>
+            </div>
+
+
+            <div class="rsspart">
+                <a href="null" target="_blank" title="rss">RSS</a>
+            </div>
+
+        </aside>
+    </div>
+</div>
+<footer><div id="footer" >
+
+    <div class="line">
+        <span></span>
+        <div class="author"></div>
+    </div>
+
+
+    <div class="social-font clearfix">
+
+
+
+
+
+    </div>
+    <p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2015
+
+        <a href="http://yoursite.com" target="_blank" title="zlc">zlc</a>
+
+    </p>
+</div>
+</footer>
+<script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.navbar').click(function(){
+            $('header nav').toggleClass('shownav');
+        });
+        var myWidth = 0;
+        function getSize(){
+            if( typeof( window.innerWidth ) == 'number' ) {
+                myWidth = window.innerWidth;
+            } else if( document.documentElement && document.documentElement.clientWidth) {
+                myWidth = document.documentElement.clientWidth;
+            };
+        };
+        var m = $('#main'),
+                a = $('#asidepart'),
+                c = $('.closeaside'),
+                o = $('.openaside');
+        $(window).resize(function(){
+            getSize();
+            if (myWidth >= 1024) {
+                $('header nav').removeClass('shownav');
+            }else
+            {
+                m.removeClass('moveMain');
+                a.css('display', 'block').removeClass('fadeOut');
+                o.css('display', 'none');
+
+                $('#toc.toc-aside').css('display', 'none');
+
+            }
+        });
+        c.click(function(){
+            a.addClass('fadeOut').css('display', 'none');
+            o.css('display', 'block').addClass('fadeIn');
+            m.addClass('moveMain');
+        });
+        o.click(function(){
+            o.css('display', 'none').removeClass('beforeFadeIn');
+            a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+            m.removeClass('moveMain');
+        });
+        $(window).scroll(function(){
+            o.css("top",Math.max(80,260-$(this).scrollTop()));
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var ai = $('.article-content>iframe'),
+                ae = $('.article-content>embed'),
+                t  = $('#toc'),
+                h  = $('article h2')
+        ah = $('article h2'),
+                ta = $('#toc.toc-aside'),
+                o  = $('.openaside'),
+                c  = $('.closeaside');
+        if(ai.length>0){
+            ai.wrap('<div class="video-container" />');
+        };
+        if(ae.length>0){
+            ae.wrap('<div class="video-container" />');
+        };
+        if(ah.length==0){
+            t.css('display','none');
+        }else{
+            c.click(function(){
+                ta.css('display', 'block').addClass('fadeIn');
+            });
+            o.click(function(){
+                ta.css('display', 'none');
+            });
+            $(window).scroll(function(){
+                ta.css("top",Math.max(140,320-$(this).scrollTop()));
+            });
+        };
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var $this = $('.share'),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                title = $this.attr('data-title'),
+                tsina = $this.attr('data-tsina');
+        var html = [
+            '<a href="#" class="overlay" id="qrcode"></a>',
+            '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+            '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+            '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+            '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+            '<span title="Share to"></span>'
+        ].join('');
+        $this.append(html);
+        $('.article-share-qrcode').click(function(){
+            var imgSrc = $('#qrcode-pic').attr('data-src');
+            $('#qrcode-pic').attr('src', imgSrc);
+            $('#qrcode-pic').load(function(){
+                $('.qrcode strong').text(' ');
+            });
+        });
+    });
+</script>
+
+
+
+
+
+
+</body>
+</html>

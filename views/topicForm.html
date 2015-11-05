@@ -1,0 +1,39 @@
+{{template "common/header.html" .}}
+{{template "common/nav.html" .}}
+
+<div class="container">
+    <h1>{{.headerPrefix}}文章</h1>
+    <form action="/topic" method="post">
+        <input type="hidden" name="id" value="{{.Topic.Id}}"/>
+        <div class="form-group">
+            <label>文章标题</label>
+            <input type="text" class="form-control" name="title" value="{{.Topic.Title}}">
+        </div>
+        <div class="form-group">
+            <label>文章分类</label>
+            {{if .Topic.Category}}
+            {{$Category := .Topic.Category}}
+            <select class="form-control" name="category">
+                {{range .Categories}}
+                <option value="{{.Id}}" {{if eq $Category .Title}}selected{{end}}>{{.Title}}</option>
+                {{end}}
+            </select>
+            {{else}}
+            <select class="form-control" name="category">
+                {{range .Categories}}
+                <option value="{{.Id}}">{{.Title}}</option>
+                {{end}}
+            </select>
+            {{end}}
+
+        </div>
+        <div class="form-group">
+            <label>文章内容</label>
+            <textarea name="content" rows="10" class="form-control">{{.Topic.Content}}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">提交</button>
+        <a href="/topic" class="btn btn-default">返回</a>
+    </form>
+</div>
+
+{{template "common/footer.html" .}}

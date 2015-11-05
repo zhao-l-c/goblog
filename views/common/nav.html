@@ -1,0 +1,18 @@
+<div class="nav navbar-default">
+	<div class="container">
+		<a class="navbar-brand" href="/">Longcheng's Blog</a>
+		<ul class="nav navbar-nav">
+			<li {{if .isHome}}class="active"{{end}}><a href="/">Home </a></li>
+			<li {{if .isCategory}}class="active"{{end}}><a href="/category">Categories</a></li>
+			<li {{if .isTopic}}class="active"{{end}}><a href="/topic">Topics</a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			{{if .isLogin}}
+			<li><a href="/logout">Logout</a>
+			{{else}}
+			<li><a href="/login">Login</a>
+			{{end}}
+		</ul>
+	</div>
+</div>
+

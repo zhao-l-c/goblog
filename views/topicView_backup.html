@@ -1,0 +1,30 @@
+{{template "common/header.html" .}}
+{{template "common/nav.html" .}}
+
+<div class="container">
+    <div class="col-md-9">
+        <h1>{{.Topic.Title}}</h1>
+        <h5>更新时间：{{.Topic.UpdateTime}}，浏览次数：{{.Topic.Views}}，评论：{{.Topic.ReplyCount}}</h5>
+        <label>分类
+        <a class="text-muted">{{.Topic.Category}}</a>
+        </label>
+        <div class="nav nav-tabs clearfix"></div>
+        <div>
+            {{.Topic.Content}}
+        </div>
+        <a href="/" class="btn btn-default">首页</a>
+    </div>
+    <div class="col-md-1">
+        <h2>标签</h2>
+        <div>
+            <ul>
+                <li>jjj</li>
+                <li>jjj</li>
+                <li>jjj</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+{{template "common/footer.html" .}}
