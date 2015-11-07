@@ -91,7 +91,12 @@ func (this *TopicController) View() {
     if err != nil {
         beego.Error(err)
     }
+    comments, err := models.QueryCommentsByTid(id)
+    if err != nil {
+        beego.Error(err)
+    }
     this.Data["Topic"] = topic
+    this.Data["Comments"] = comments
 }
 
 func (this *TopicController) Delete() {

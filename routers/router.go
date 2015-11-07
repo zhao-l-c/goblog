@@ -18,6 +18,9 @@ func init() {
     beego.Router("/category", &controllers.CategoryController{})
     //
     beego.Router("/topic", &controllers.TopicController{})
+    //
+    beego.Router("/comment", &controllers.CommentController{})
     // 使用自动路由
     beego.AutoRouter(&controllers.TopicController{})
+	beego.AutoRouter(&controllers.CommentController{})
 }

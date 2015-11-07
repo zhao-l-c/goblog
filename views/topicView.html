@@ -4,6 +4,7 @@
 <div class="container">
     <div class="col-md-9">
         <h2>{{.Topic.Title}}</h2>
+
         <p class="text-muted">发表于：{{.Topic.CreateTime}}，浏览次数：{{.Topic.Views}}，回复：{{.Topic.ReplyCount}}</p>
 
         <div>
@@ -12,65 +13,58 @@
 
         <hr class="article-divider">
 
-        <h3>最新评论</h3>
-        <!--
-        <ul class="uk-comment-list">
-            <li>
-                <article class="uk-comment">
-                    <header class="uk-comment-header">
-                        <img class="uk-comment-avatar uk-border-circle" width="50" height="50" src="http://www.gravatar.com/avatar/bd478eb1186e621237f899e0292448eb?d=mm&amp;s=120">
-                        <h4 class="uk-comment-title">zhangshuaishuai </h4>
-                        <p class="uk-comment-meta">2015年10月18日</p>
-                    </header>
-                    <div class="uk-comment-body">
-                        <p>sfhdgttttndddddddd</p>
+        {{if .isLogin}}
+        <h3>发表评论</h3>
+        <div class="comment">
+            <header class="comment-header">
+                <img class="comment-avatar comment-border-circle" width="50" height="50"
+                     src="/static/img/user_default.png">
+                <h4 class="comment-title">
+                    infouryears
+                </h4>
+            </header>
+            <div class="comment-body">
+                <form action="/comment" method="post">
+                    <input type="hidden" name="tid" value="{{.Topic.Id}}">
+                    <!--TODO-->
+                    <input name="userId" type="hidden"/>
+                    <div class="comment-textarea">
+                        <textarea rows="6" placeholder="说点什么吧" class="form-control" name="content"></textarea>
                     </div>
-                </article>
-            </li>
-        </ul>
-        -->
+                    <button type="submit" class="btn btn-primary">
+                        发表评论
+                    </button>
+                </form>
+            </div>
+        </div>
+        <hr class="article-divider"/>
+        {{end}}
+
+
+        <h3>最新评论</h3>
+        {{$tid := .Topic.Id}}
+        <!-- TODO 当前用户是超级管理员-->
+        {{if .isLogin}}
+        {{range .Comments}}
         <ul class="comment-list">
             <li>
                 <div class="comment">
                     <header class="comment-header">
                         <img class="comment-avatar comment-border-circle"
                              width="50" height="50" src="/static/img/user_default.png?d=mm&amp;s=120">
-                        <h4 class="comment-title">zhangshuaishuai </h4>
-                        <p class="comment-meta">2015年10月18日</p>
+                        <h4 class="comment-title">someone</h4>
+                        <p class="comment-meta">{{.ReplyTime}}</p>
                     </header>
                     <div class="comment-body">
-                        <p>sfhdgttttndddddddd</p>
+                        <p>{{.Content}}</p>
+                        <!--暂时屏蔽删除功能-->
+                        <!--<a class="btn btn-danger" href="/comment/delete/{{$tid}}/{{.Id}}">删除</a>-->
                     </div>
                 </div>
             </li>
-            <li>
-                <div class="comment">
-                    <header class="comment-header">
-                        <img class="comment-avatar comment-border-circle"
-                             width="50" height="50" src="/static/img/user_default.png?d=mm&amp;s=120">
-                        <h4 class="comment-title">xxx </h4>
-                        <p class="comment-meta">2015年10月18日</p>
-                    </header>
-                    <div class="comment-body">
-                        <p>sfhdgttttndddddddd</p>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="comment">
-                    <header class="comment-header">
-                        <img class="comment-avatar comment-border-circle"
-                             width="50" height="50" src="/static/img/user_default.png?d=mm&amp;s=120">
-                        <h4 class="comment-title">eeess </h4>
-                        <p class="comment-meta">2015年10月18日</p>
-                    </header>
-                    <div class="comment-body">
-                        <p>sfhdgttttndddddddd</p>
-                    </div>
-                </div>
-            </li>
-
         </ul>
+        {{end}}
+        {{end}}
     </div>
 </div>
 {{template "common/footer.html" .}}

@@ -14,11 +14,17 @@ type Topic struct {
     Attachment      string
     CreateTime      time.Time `orm:"index"`
     UpdateTime      time.Time `orm:"index"`
+    // 文章分类
     Category        string    `orm:"index"`
+    // 浏览数
     Views           int64     `orm:"index"`
+    // 作者
     Author          string
+    // 最后回复时间
     ReplyTime       time.Time `orm:"index"`
+    // 回复数
     ReplyCount      int64
+    // 最后回复用户id
     ReplyLastUserId int64
 }
 
