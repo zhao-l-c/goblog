@@ -1,0 +1,12 @@
+<div class="tags-header">
+    <h4>标签</h4>
+
+    <div class="list-group">
+        {{range .Tags}}
+        <a href="/topic/tag/{{.Name}}" class="list-group-item">
+            <span class="badge">{{.Count}}</span>
+            {{.Name}}
+        </a>
+        {{end}}
+    </div>
+</div>
