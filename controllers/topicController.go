@@ -3,6 +3,8 @@ package controllers
 import (
     "github.com/astaxie/beego"
     "GoWeb/beego/models"
+    "path"
+    "GoWeb/beego/commons"
 )
 
 type TopicController struct {
@@ -30,15 +32,36 @@ func (this *TopicController) Post() {
         content := this.Input().Get("content")
         cid := this.Input().Get("category")
         tags := this.Input().Get("tags")
+
+        // 可忽略第三个返回值error，不强制上传附件
+        _, fh, _ := this.GetFile("attachment")
+        var attachName string
+        // 是否上传了附件，更新文章的时候使用，若为true则需要删除旧的附件
+        var attached = false
+        if fh != nil {
+            attached = true
+            attachName = fh.Filename
+            beego.Info("upload file is:" + attachName)
+            // path.Join使用相对路径，即当前beego执行文件所在路径
+            uuid, err := commons.UUID()
+            if err != nil {
+                beego.Error(err)
+                this.Redirect("/topic", 302)
+            }
+            attachName = uuid + "$" + attachName
+            this.SaveToFile("attachment", path.Join("attachment", attachName))
+        } else {
+            beego.Error("no attachment...")
+        }
         // inset one
         if len(tid) == 0 {
-            err := models.AddTopic(title, content, tags, cid)
+            err := models.AddTopic(title, content, tags, cid, attachName)
             if err != nil {
                 beego.Error(err)
             }
-            // update one
+        // update one
         } else {
-            err := models.UpdateTopic(tid, title, content, tags, cid)
+            err := models.UpdateTopic(tid, title, content, tags, cid, attachName, attached)
             if err != nil {
                 beego.Error(err)
             }

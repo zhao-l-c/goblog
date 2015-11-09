@@ -5,6 +5,8 @@ import (
     "strconv"
     "strings"
     "GoWeb/beego/commons"
+    "path"
+    "os"
 )
 
 type Topic struct {
@@ -30,7 +32,7 @@ type Topic struct {
     LastReplyUserId int64
 }
 
-func AddTopic(title, content, tags, cid string) error {
+func AddTopic(title, content, tags, cid, attachName string) error {
     orm := orm.NewOrm()
     categoryId, err := strconv.ParseInt(cid, 10, 64)
     if err != nil {
@@ -49,6 +51,7 @@ func AddTopic(title, content, tags, cid string) error {
         Title: title,
         Content: content,
         Tags: tags,
+        Attachment: attachName,
         CreateTime: CurrentTime(),
         UpdateTime: CurrentTime(),
         LastReplyTime: CurrentTime(),
@@ -110,7 +113,7 @@ func GetTopic(id string) (*Topic, error) {
     return topic, nil
 }
 
-func UpdateTopic(id, title, content, tags, cid string) error {
+func UpdateTopic(id, title, content, tags, cid, attachName string, attached bool) error {
     tid, err := strconv.ParseInt(id, 10, 64)
     if err != nil {
         return err
@@ -130,18 +133,23 @@ func UpdateTopic(id, title, content, tags, cid string) error {
     tagArray := strings.Split(strings.Trim(tags, " "), " ")
     tags = "$" + strings.Join(tagArray, "#$") + "#"
     var oldTags string
-    // valida exist and modify
     var oldTitle string
+    var oldAttachName string
+    // valida exist and modify
     err = orm.Read(topic)
     if err != nil {
         return err
     } else {
         oldTitle = topic.Category
         oldTags = topic.Tags
+        oldAttachName = topic.Attachment
 
         topic.Title = title
         topic.Content = content
         topic.Tags = tags
+        if attached {
+            topic.Attachment = attachName
+        }
         topic.UpdateTime = CurrentTime()
         topic.Category = category.Title
         _, err = orm.Update(topic)
@@ -150,7 +158,13 @@ func UpdateTopic(id, title, content, tags, cid string) error {
         }
     }
 
-
+    // delete old file
+    if attached {
+        oldAttachName = path.Join("attachment", oldAttachName)
+        if _, err := os.Stat(oldAttachName); err == nil {
+            os.Remove(oldAttachName)
+        }
+    }
     // update category's topicCount
     if oldTitle != category.Title {
         // new category plus one

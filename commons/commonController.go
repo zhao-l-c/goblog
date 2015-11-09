@@ -1,4 +1,8 @@
 package commons
+import (
+    "os/exec"
+    "strings"
+)
 
 func Diff(new, old []string) (insertSlice, deleteSlice []string) {
     length := len(new)
@@ -37,4 +41,10 @@ func Contains(s string, slice []string) bool {
         }
     }
     return false
+}
+
+func UUID() (string, error) {
+    bytes, err := exec.Command("uuidgen").Output()
+    out := strings.TrimRight(string(bytes), "\n")
+    return out, err
 }

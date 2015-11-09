@@ -1,10 +1,9 @@
 {{template "common/header.html" .}}
 {{template "common/nav.html" .}}
-
 <div class="container">
     <h1>{{.headerPrefix}}文章</h1>
 
-    <form action="/topic" method="post">
+    <form action="/topic" method="post" enctype="multipart/form-data">
         <input type="hidden" name="id" value="{{.Topic.Id}}"/>
 
         <div class="form-group">
@@ -37,10 +36,29 @@
             <label>文章内容</label>
             <textarea name="content" rows="10" class="form-control">{{.Topic.Content}}</textarea>
         </div>
+        <div class="form-group">
+            <label>附件上传</label>
+            <span class="btn btn-primary btn-file">
+                浏览<input type="file" name="attachment"/>
+            </span>
+            <!--<span id="filename" class="label-info">{{.Topic.Attachment}}</span>-->
+            <input type="hidden" name="oldAttachment" value="{{.Topic.Attachment}}"/>
+            <span id="filename" class="label-info"><a href="/attachment/{{.Topic.Attachment}}" target="_blank">{{.Topic.Attachment | getFileName}}</a></span>
+        </div>
         <button type="submit" class="btn btn-primary">提交</button>
         <a href="/topic" class="btn btn-default">返回</a>
     </form>
 </div>
-
-
 {{template "common/footer.html" .}}
+<script>
+    $(document).on('change', '.btn-file :file', function() {
+        var input = $(this),
+            // numFiles = this.files ? this.files.length : 1,
+            // 或者：
+            // numFiles = input.get(0).files ? input.get(0).files.length : 1,
+            // 首先把windows下的/路径分隔替换为/，然后去掉/和/前面的所有字符，即只留下文件名
+            label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+        $("#filename").html(label)
+    });
+</script>
+
