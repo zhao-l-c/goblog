@@ -3,6 +3,7 @@ package controllers
 import (
     "github.com/astaxie/beego"
     "GoWeb/beego/models"
+    "strings"
 )
 
 type TopicController struct {
@@ -17,7 +18,7 @@ func (this *TopicController) Get() {
     // TODO
     // SetCommonData(this, "topic.html", "isTopic", "文章")
     var err error
-    this.Data["Topics"], err = models.AllTopics(false)
+    this.Data["Topics"], err = models.AllTopics(true, "", "")
     if err != nil {
         beego.Error(err)
     }
@@ -29,15 +30,16 @@ func (this *TopicController) Post() {
         title := this.Input().Get("title")
         content := this.Input().Get("content")
         cid := this.Input().Get("category")
+        tags := this.Input().Get("tags")
         // inset one
         if len(tid) == 0 {
-            err := models.AddTopic(title, content, cid)
+            err := models.AddTopic(title, content, tags, cid)
             if err != nil {
                 beego.Error(err)
             }
             // update one
         } else {
-            err := models.UpdateTopic(tid, title, content, cid)
+            err := models.UpdateTopic(tid, title, content, tags, cid)
             if err != nil {
                 beego.Error(err)
             }
@@ -97,6 +99,7 @@ func (this *TopicController) View() {
     }
     this.Data["Topic"] = topic
     this.Data["Comments"] = comments
+    this.Data["TopicTags"] = strings.Split(strings.Trim(topic.Tags, " "), " ")
 }
 
 func (this *TopicController) Delete() {
@@ -106,4 +109,34 @@ func (this *TopicController) Delete() {
         beego.Error(err)
     }
     this.Redirect("/topic", 302)
+}
+
+func (this *TopicController) Category() {
+    category := this.Ctx.Input.Param("0")
+    topics, err := models.AllTopics(true, category, "")
+    if err != nil {
+        beego.Error(err)
+    }
+    this.TplNames = "home.html"
+    this.Data["headerTitle"] = "Home"
+    this.Data["isLogin"] = checkLogin(this.Ctx)
+    this.Data["isHome"] = true
+    this.Data["Topics"] = topics
+}
+
+func (this *TopicController) Tag() {
+    tag := this.Ctx.Input.Param("0")
+    topics, err := models.AllTopics(true, "", tag);
+    if err != nil {
+        beego.Error(err)
+    }
+    this.TplNames = "home.html"
+    this.Data["headerTitle"] = "Home"
+    this.Data["isLogin"] = checkLogin(this.Ctx)
+    this.Data["isHome"] = true
+    this.Data["Topics"] = topics
+    this.Data["Tags"], err = models.AllTags()
+    if err != nil {
+        beego.Error(err)
+    }
 }

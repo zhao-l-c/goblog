@@ -20,9 +20,11 @@ func (this *CommentController) Post() {
 }
 
 func (this *CommentController) Delete() {
+    // 文章id
     tid := this.Ctx.Input.Param("0")
-    id := this.Ctx.Input.Param("1")
-    err := models.DeleteComment(id)
+    // 评论id
+    cid := this.Ctx.Input.Param("1")
+    err := models.DeleteComment(cid, tid)
     if err != nil {
         beego.Error(err)
     }

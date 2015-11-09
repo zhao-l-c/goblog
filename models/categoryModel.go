@@ -1,7 +1,6 @@
 package models
 
 import (
-    "time"
     "github.com/astaxie/beego/orm"
     "strconv"
 )
@@ -10,9 +9,9 @@ import (
 type Category struct {
     Id              int64
     Title           string
-    Views           int64     `orm:"index"`
-    CreateTime      time.Time `orm:"index"`
-    TopicTime       time.Time `orm:"index"`
+    Views           int64  `orm:"index"`
+    CreateTime      string `orm:"index"`
+    TopicTime       string `orm:"index"`
     TopicCount      int64
     TopicLastUserId int64
 }
@@ -21,8 +20,8 @@ func AddCategory(title string) error {
     orm := orm.NewOrm()
     category := &Category{
         Title: title,
-        CreateTime: time.Now(),
-        TopicTime: time.Now(),
+        CreateTime: CurrentTime(),
+        TopicTime: CurrentTime(),
     }
     // query if duplicated
     err := orm.QueryTable("category").Filter("title", title).One(category)

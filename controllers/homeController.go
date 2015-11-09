@@ -15,7 +15,12 @@ func (this *MainController) Get() {
 	this.Data["isLogin"] = checkLogin(this.Ctx)
     this.Data["isHome"] = true
     var err error
-	this.Data["Topics"], err = models.AllTopics(true)
+
+	this.Data["Topics"], err = models.AllTopics(true, "", "")
+    if err != nil {
+        beego.Error(err)
+    }
+    this.Data["Tags"], err = models.AllTags()
     if err != nil {
         beego.Error(err)
     }

@@ -1,9 +1,9 @@
 package models
 
 import (
-    "time"
     "github.com/astaxie/beego/orm"
     "strconv"
+    "strings"
 )
 
 type Topic struct {
@@ -11,9 +11,10 @@ type Topic struct {
     Uid             int64
     Title           string
     Content         string `orm:"size(5000)"`
+    Tags            string `orm:"size(1000)"`
     Attachment      string
-    CreateTime      time.Time `orm:"index"`
-    UpdateTime      time.Time `orm:"index"`
+    CreateTime      string `orm:"index"`
+    UpdateTime      string `orm:"index"`
     // 文章分类
     Category        string    `orm:"index"`
     // 浏览数
@@ -21,14 +22,14 @@ type Topic struct {
     // 作者
     Author          string
     // 最后回复时间
-    ReplyTime       time.Time `orm:"index"`
+    LastReplyTime   string `orm:"index"`
     // 回复数
     ReplyCount      int64
     // 最后回复用户id
-    ReplyLastUserId int64
+    LastReplyUserId int64
 }
 
-func AddTopic(title, content , cid string) error {
+func AddTopic(title, content, tags, cid string) error {
     orm := orm.NewOrm()
     categoryId, err := strconv.ParseInt(cid, 10, 64)
     if err != nil {
@@ -39,33 +40,51 @@ func AddTopic(title, content , cid string) error {
     if err != nil {
         return err
     }
+    // java scala linux => $java#$scala#$linux#
+    tagArray := strings.Split(strings.Trim(tags, " "), " ")
+    tags = "$" + strings.Join(tagArray, "#$")  + "#"
 
     topic := &Topic{
         Title: title,
         Content: content,
-        CreateTime: time.Now(),
-        UpdateTime: time.Now(),
-        ReplyTime: time.Now(),
+        Tags: tags,
+        CreateTime: CurrentTime(),
+        UpdateTime: CurrentTime(),
+        LastReplyTime: CurrentTime(),
         Category: category.Title,
     }
     // add one topic
     _, err = orm.Insert(topic)
+    if err != nil {
+        return err
+    }
     // update category's count
     category.TopicCount++
-    category.TopicTime = time.Now()
-    orm.Update(category)
+    category.TopicTime = CurrentTime()
+    _, err = orm.Update(category)
+    if err != nil {
+        return err
+    }
+    // insert or update tag
+    InsertOrUpdateTags(tagArray)
     return err
 }
 
-func AllTopics(orderBy bool) ([]*Topic, error) {
+func AllTopics(orderBy bool, category, tag string) ([]*Topic, error) {
     orm := orm.NewOrm()
     topics := make([]*Topic, 0)
     var err error
-    if orderBy {
-        _, err = orm.QueryTable("topic").OrderBy("-createTime").All(&topics)
-    } else {
-        _, err = orm.QueryTable("topic").All(&topics)
+    query := orm.QueryTable("topic")
+    if len(category) > 0 {
+        query = query.Filter("category", category)
     }
+    if len(tag) > 0 {
+        query = query.Filter("tags__contains", "$" + tag + "#")
+    }
+    if orderBy {
+        query = query.OrderBy("-createTime")
+    }
+    _, err = query.All(&topics)
     return topics, err
 }
 
@@ -86,10 +105,11 @@ func GetTopic(id string) (*Topic, error) {
     // update views
     topic.Views++
     orm.Update(topic)
+    topic.Tags = strings.Replace(strings.Replace(topic.Tags, "#", " ", -1), "$", "", -1)
     return topic, nil
 }
 
-func UpdateTopic(id, title, content, cid string) error {
+func UpdateTopic(id, title, content, tags, cid string) error {
     tid, err := strconv.ParseInt(id, 10, 64)
     if err != nil {
         return err
@@ -105,38 +125,59 @@ func UpdateTopic(id, title, content, cid string) error {
     if err != nil {
         return err
     }
-
     topic := &Topic{Id: tid}
+    tagArray := strings.Split(strings.Trim(tags, " "), " ")
+    tags = "$" + strings.Join(tagArray, "#$") + "#"
     // valida exist and modify
-    var oldCategoryTitle string
-    if orm.Read(topic) == nil {
-        oldCategoryTitle = topic.Category
+    var oldTitle string
+    err = orm.Read(topic)
+    if err != nil {
+        return err
+    } else {
+        oldTitle = topic.Category
         topic.Title = title
         topic.Content = content
-        topic.UpdateTime = time.Now()
+        topic.Tags = tags
+        topic.UpdateTime = CurrentTime()
         topic.Category = category.Title
-        orm.Update(topic)
+        _, err = orm.Update(topic)
+        if err != nil {
+            return err
+        }
     }
 
 
     // update category's topicCount
-    if oldCategoryTitle != category.Title {
+    if oldTitle != category.Title {
         // new category plus one
         category.TopicCount++
-        orm.Update(category)
-        // old category minus one
-        oldCategory := &Category{Title: oldCategoryTitle}
-        err = orm.QueryTable("category").Filter("title", oldCategoryTitle).One(oldCategory)
+        _, err = orm.Update(category)
         if err != nil {
             return err
         }
-        oldCategory.TopicCount--
-        if oldCategory.TopicCount >= 0 {
-            orm.Update(oldCategory)
+        // TODO 如果旧的分类被删除，则报错，错误信息是：<QuerySeter> no row found
+        count, err := orm.QueryTable("category").Filter("title", oldTitle).Count()
+        if err != nil {
+            return err
+        }
+        // 分类存在，则分类数目减一
+        if count == 1 {
+            oldCategory := &Category{Title: oldTitle}
+            err = orm.QueryTable("category").Filter("title", oldTitle).One(oldCategory)
+            if err != nil {
+                return err
+            }
+            oldCategory.TopicCount--
+            if oldCategory.TopicCount >= 0 {
+                _, err = orm.Update(oldCategory)
+                if err != nil {
+                    return err
+                }
+            }
         }
     }
-
-    return nil
+    // update tags
+    return InsertOrUpdateTags(tagArray)
 }
 
 func DeleteTopic(id string) error {
@@ -145,7 +186,7 @@ func DeleteTopic(id string) error {
         return err
     }
     orm := orm.NewOrm()
-    topic := &Topic {
+    topic := &Topic{
         Id: tid,
     }
     _, err = orm.Delete(topic)

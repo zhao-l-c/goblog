@@ -82,3 +82,26 @@
 .comment-textarea {
     margin-bottom: 10px;
 }
+
+/*tags*/
+.tags-header {
+    margin-left: 20px;
+    padding: 0px 15px 0 15px;
+
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    background-color: #fafafa;
+}
+
+.tags > ul {
+    list-style: none;
+}
+
+.tag-muted {
+    color: #777;
+    font-size: 12px;
+}
+
+.tag-href {
+    padding-right: 5px;
+}
