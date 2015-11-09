@@ -4,6 +4,7 @@ import (
     "github.com/astaxie/beego/orm"
     "strconv"
     "strings"
+    "GoWeb/beego/commons"
 )
 
 type Topic struct {
@@ -128,6 +129,7 @@ func UpdateTopic(id, title, content, tags, cid string) error {
     topic := &Topic{Id: tid}
     tagArray := strings.Split(strings.Trim(tags, " "), " ")
     tags = "$" + strings.Join(tagArray, "#$") + "#"
+    var oldTags string
     // valida exist and modify
     var oldTitle string
     err = orm.Read(topic)
@@ -135,6 +137,8 @@ func UpdateTopic(id, title, content, tags, cid string) error {
         return err
     } else {
         oldTitle = topic.Category
+        oldTags = topic.Tags
+
         topic.Title = title
         topic.Content = content
         topic.Tags = tags
@@ -176,8 +180,9 @@ func UpdateTopic(id, title, content, tags, cid string) error {
             }
         }
     }
-    // update tags
-    return InsertOrUpdateTags(tagArray)
+    oldTags = strings.Replace(strings.Replace(oldTags, "#", " ", -1), "$", "", -1)
+    oldTagArray := strings.Split(strings.Trim(oldTags, " "), " ")
+    return ModifyTags(commons.Diff(tagArray, oldTagArray))
 }
 
 func DeleteTopic(id string) error {

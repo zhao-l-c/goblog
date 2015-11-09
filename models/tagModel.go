@@ -20,6 +20,9 @@ func InsertOrUpdateTags(tags []string) error {
     var count int64
     var err error
     for _, name := range tags  {
+        if len(name) == 0 {
+            break
+        }
         count, err = QueryTagByName(name)
         if err == nil {
             if count == 0 {
@@ -37,13 +40,24 @@ func InsertOrUpdateTags(tags []string) error {
     return nil
 }
 
-func DecreaseTagCounts(tags []string) error {
-    for _, name := range tags {
+func ModifyTags(insert, delete []string) error {
+    var err error
 
+    err = InsertOrUpdateTags(insert)
+    if err != nil {
+        return err
     }
+    for _, name := range delete {
+        if len(name) == 0 {
+            break
+        }
+        err = DecreaseTagCount(name)
+        if err != nil {
+            return err
+        }
+    }
+    return nil
 }
-
-
 
 func AddTag(name string) error {
     orm := orm.NewOrm()
@@ -52,9 +66,34 @@ func AddTag(name string) error {
     return err
 }
 
+func DecreaseTagCount(name string) error {
+    orm := orm.NewOrm()
+    querySelector := orm.QueryTable("tag").Filter("name", name)
+    count, err := querySelector.Count()
+    if err != nil {
+        return err
+    }
+    if count > 0{
+        tag := &Tag{Name: name}
+        err = querySelector.One(tag)
+        if err != nil {
+            return err
+        }
+        tag.Count--
+        if tag.Count > 0 {
+            _, err = orm.Update(tag)
+        } else {
+            _, err = orm.Delete(tag)
+        }
+        return err
+    }
+    return nil
+}
+
 func IncreaseTagCount(name string) error {
     orm := orm.NewOrm()
     tag := &Tag{Name: name}
+    // 没有主键，无法使用Read方法
     err := orm.QueryTable("tag").Filter("name", name).One(tag)
     if err != nil {
         return err

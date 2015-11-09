@@ -3,7 +3,6 @@ package controllers
 import (
     "github.com/astaxie/beego"
     "GoWeb/beego/models"
-    "strings"
 )
 
 type TopicController struct {
@@ -99,7 +98,10 @@ func (this *TopicController) View() {
     }
     this.Data["Topic"] = topic
     this.Data["Comments"] = comments
-    this.Data["TopicTags"] = strings.Split(strings.Trim(topic.Tags, " "), " ")
+    this.Data["Tags"], err = models.AllTags()
+    if err != nil {
+        beego.Error(err)
+    }
 }
 
 func (this *TopicController) Delete() {

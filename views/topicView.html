@@ -75,10 +75,10 @@
         <div class="tags-header">
             <h4>标签</h4>
             <div class="list-group">
-                {{range .TopicTags}}
+                {{range .Tags}}
                 <a href="#" class="list-group-item">
-                    <span class="badge">10</span>
-                    {{.}}
+                    <span class="badge">{{.Count}}</span>
+                    {{.Name}}
                 </a>
                 {{end}}
             </div>
